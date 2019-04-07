@@ -21,6 +21,7 @@ var vNorm, texCoord;
 // Shader transformation matrices
 
 var modelViewMatrix, projectionMatrix, inP;
+var at=vec3(0,2,0),eye=vec3(0,3,5),fovy=60,up=vec3(0,1,0),aspect=1;
 
 
 
@@ -137,7 +138,8 @@ function parseObj(obj) {
 
                         if (vdat[1] != "") {
                             ind = (parseInt(vdat[1]) - 1) * 2;
-                            texCoord.push(tempText[ind], tempText[ind + 1], tempText[ind + 2])
+                            console.log();
+                            texCoord.push(tempText[ind], tempText[ind + 1]);
                         }
                         Cache[subline[j]] = tindexCount;
                         fIndex.push(tindexCount);
@@ -162,6 +164,7 @@ function parseObj(obj) {
 
 }
 function importObj(file) {
+    console.log(file);
     var file = file.target.files[0];
     if (!file) {
         return;
@@ -174,6 +177,12 @@ function importObj(file) {
 
     };
     reader.readAsText(file);
+}
+function loadObj(obj){
+    const fileUrl = obj; // provide file location
+    fetch(fileUrl)
+   .then( r => r.text() )
+   .then( t => parseObj(t) )
 }
 var mouseX, mouseY;
 var lMouse = false;
@@ -275,41 +284,38 @@ window.onload = function init() {
     iBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, iBuffer);
 
-    // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,fIndex, gl.STATIC_DRAW);
-
+    // Create and bind the framebuffer
+    // const fb = gl.createFramebuffer();
+    // gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+     
+    // // attach the texture as the first color attachment
+    // const attachmentPoint = gl.COLOR_ATTACHMENT0;
+    // gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, tex, level);
 
     vNorm = gl.getAttribLocation(program, "normals");
     gl.vertexAttribPointer(vNorm, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vNorm);
 
-    // fnBuffer = gl.createBuffer();
-    // gl.bindBuffer(gl.ARRAY_BUFFER, fnBuffer);
-    // fNorm = gl.getAttribLocation(program, "facenormals");
+    
     texCoord = gl.getAttribLocation(program,"texCoord")
-    //gl.vertexAttribPointer(fNorm, 3, gl.FLOAT, false, 0, 0);
-    //gl.enableVertexAttribArray(fNorm);
-    cBuffer = gl.createBuffer();
-    // gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    // gl.bufferData(gl.ARRAY_BUFFER, flatten(circle.colors), gl.STATIC_DRAW);
 
-    // vColor = gl.getAttribLocation(program, "vColor");
-    // gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-    // gl.enableVertexAttribArray(vColor);
+    cBuffer = gl.createBuffer();    
 
 
     modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix");
-    modelViewMatrix = lookAt(vec3(0, 2, 5), vec3(0, 3, 0), vec3(0, 1, 0));
+    modelViewMatrix = lookAt(eye, at, up);
+    
 
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
-    projectionMatrix = perspective(60, canvas.width / canvas.height, .01, 500);
+    projectionMatrix = perspective(fovy, gl.canvas.width/gl.canvas.height, .01, 1000);
     inP = inverse4(projectionMatrix);
     gl.uniformMatrix4fv(gl.getUniformLocation(program, "projectionMatrix"), false, flatten(projectionMatrix));
     pirate = document.getElementById("obj").text;
     //console.log(pirate);
-    parseObj(pirate);
-    console.log(models[0]);
+   
         // Create a texture.
         var texture = gl.createTexture();
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         const level = 0;
         const internalFormat = gl.RGBA;
@@ -328,7 +334,7 @@ window.onload = function init() {
         image = new Image();
         image.src="pirate_girl.png";
 
-       
+       loadObj("pirate_girl.obj");
         
     image.onload = function() {
         console.log("uwu");
@@ -358,12 +364,14 @@ window.onload = function init() {
     render();
 }
 
-
+function isPowerOf2(value) {
+    return (value & (value - 1)) == 0;
+  }
 var t = 1;
 var render = function () {
     gl.uniform1f(gl.getUniformLocation(program, "time"), t);
-
-
+    
+    aspect=gl.canvas.width/gl.canvas.height;
     gl.clear(gl.COLOR_BUFFER_BIT);
     drawModels();
     requestAnimFrame(render);
@@ -394,6 +402,9 @@ var getFnorms = function (model) {
     }
 }
 var drawModels = function () {
+    modelViewMatrix = lookAt(eye, at, up);
+
+    projectionMatrix = perspective(fovy, aspect, .01, 1000);
     for (var i = 0; i < models.length; i++) {
         var curr = models[i];
         gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
