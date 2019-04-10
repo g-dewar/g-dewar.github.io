@@ -580,12 +580,14 @@ var ontime = 0;
 var maxOn = 100;
 var colorCycle = 0;
 var render = function () {
-    secCol[0] = colorCycle * (Math.sin(.01 * tcount + 0) * .5 + .5);
-    secCol[1] = colorCycle * (Math.sin(.01 * tcount + 2) * .5 + .5);
-    secCol[2] = colorCycle * (Math.sin(.01 * tcount + 4) * .5 + .5);
+    if(colorCycle>0.0){
+    secCol[0] = (Math.sin(.01 * tcount + 0) * .5 + .5);
+    secCol[1] = (Math.sin(.01 * tcount + 2) * .5 + .5);
+    secCol[2] = (Math.sin(.01 * tcount + 4) * .5 + .5);
     secCol[0] %= 1.0;
     secCol[1] %= 1.0;
     secCol[2] %= 1.0;
+    }
     if (lighton) {
         tarCol = vec3(secCol);
     }
