@@ -570,7 +570,7 @@ window.onload = function init() {
     }
 }
 function pirate(){
-    gl.useProgram(program3);
+    gl.useProgram(program);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.clear(gl.COLOR_BUFFER_BIT);
