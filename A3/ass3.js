@@ -494,9 +494,9 @@ window.onload = function init() {
     
     // Asynchronously load an image
     image = new Image();
-    image.src = "pirate_girl.png";
+    image.src = "cube.png";
 
-    loadObj("pirate_girl.obj");
+    loadObj("mycube.obj");
 
     image.onload = function () {
         console.log("uwu");
