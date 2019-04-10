@@ -140,7 +140,6 @@ function parseObj(obj) {
 
                         if (vdat[1] != "") {
                             ind = (parseInt(vdat[1]) - 1) * 2;
-                            console.log();
                             texCoord.push(tempText[ind], tempText[ind + 1]);
                         }
                         Cache[subline[j]] = tindexCount;
@@ -571,6 +570,10 @@ window.onload = function init() {
     }
 }
 function pirate(){
+    gl.useProgram(program3);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.clear(gl.COLOR_BUFFER_BIT);
     drawModels(0,true);
     requestAnimationFrame(pirate);
 }
