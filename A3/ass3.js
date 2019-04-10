@@ -25,6 +25,7 @@ function model(verts, norms, texCoord, fIndex, indexCount) {
 var vPosition;
 var vColor;
 var vNorm, texCoord;
+var mleng;
 
 // Shader transformation matrices
 var cam = {
@@ -206,7 +207,7 @@ function getKey(key) {
 
             break;
         case "m":
-            var mleng = models.length;
+            mleng = models.length;
             for (i = 0; i < mleng; i++) {
                 models.push(new model(models[0].vertices, models[0].normals, models[0].texCoord, models[0].fIndex, models[0].indexCount));
                 //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
@@ -214,7 +215,7 @@ function getKey(key) {
 
             break;
         case "x":
-            var mleng = models.length;
+            mleng = models.length;
             for (i = 0; i < mleng; i += 2) {
                 models.pop(models[0]);
                 //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
