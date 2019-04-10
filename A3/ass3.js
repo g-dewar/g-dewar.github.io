@@ -241,6 +241,20 @@ function getKey(key) {
             lighton = false;
             tarCol = vec3(0, 0, 0);
             break;
+            case "w":
+
+            maxBloom+=1;
+            if(maxBloom>19){
+                maxBloom=19;
+            }
+            break;
+            case "s":
+
+            maxBloom-=1;
+            if(maxBloom<1){
+                maxBloom=1;
+            }
+            break;
         case "ArrowUp":
             zoom += 1;
             if (zoom > 0) {
@@ -591,6 +605,7 @@ var curCol = vec3(0.0, 0.0, 0.0);
 var tarCol = vec3(0.0, 0.0, 0.0);
 var secCol = vec3(0.0, 0.3, 0.3);
 var bloomN = 2;
+var maxBloom =12;
 var ontime = 0;
 var maxOn = 100;
 var colorCycle = 0;
@@ -609,8 +624,10 @@ var render = function () {
     tcount += 1;
     tcount = tcount % numpoints;
     if (lighton) {
-        if (bloomN < 12) {
+        if (bloomN < maxBloom) {
             bloomN += .1;
+        }else if(bloomN>maxBloom){
+            bloomN-=1;
         }
         if (ontime < maxOn) {
             ontime += 1;
@@ -865,7 +882,7 @@ var drawModels = function (num, path) {
         var xt = 0, yt = 0, zt = 0;
         if (path) {
             var t = ((tcount + i * Math.ceil((numpoints - 1) / models.length)) % numpoints);
-            var rmod=(1 + i % (Math.log(models.length)));
+            var rmod=(1 + i %(1+ (Math.log(models.length))));
             xt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.cos(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + rmod * points[t][0] * (ontime / maxOn);
             yt = rmod * points[t][1] * (ontime / maxOn) * (ontime / maxOn);
             zt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.sin(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + rmod* points[t][2] * (ontime / maxOn);
