@@ -206,16 +206,16 @@ function getKey(key) {
 
             break;
         case "m":
-            var length = models.length;
-            for (i = 0; i < length; i++) {
+            var mleng = models.length;
+            for (i = 0; i < mleng; i++) {
                 models.push(new model(models[0].vertices, models[0].normals, models[0].texCoord, models[0].fIndex, models[0].indexCount));
                 //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
             }
 
             break;
         case "x":
-            var length = models.length;
-            for (i = 0; i < length; i += 2) {
+            var mleng = models.length;
+            for (i = 0; i < mleng; i += 2) {
                 models.pop(models[0]);
                 //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
             }
