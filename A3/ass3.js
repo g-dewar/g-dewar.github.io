@@ -491,7 +491,7 @@ window.onload = function init() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        var yarr=true;
+    
     // Asynchronously load an image
     image = new Image();
     image.src = "pirate_girl.png";
@@ -563,22 +563,8 @@ window.onload = function init() {
         colorCycle = parseFloat(event.target.value);
     };
     morep();
-    if(!yarr){
     render();
-    }else{
         pirate();
-    }
-}
-function pirate(){
-    gl.viewport(0, 0, texw, texh);
-    gl.uniform1i(gl.getUniformLocation(program, "mode"), 0);
-
-    gl.useProgram(program);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    drawModels(0,true);
-    requestAnimationFrame(pirate);
 }
 
 
