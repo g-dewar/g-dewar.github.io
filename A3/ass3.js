@@ -244,15 +244,15 @@ function getKey(key) {
             case "w":
 
             maxBloom+=1;
-            if(maxBloom>19){
-                maxBloom=19;
+            if(maxBloom>24){
+                maxBloom=24;
             }
             break;
             case "s":
 
             maxBloom-=1;
-            if(maxBloom<1){
-                maxBloom=1;
+            if(maxBloom<2){
+                maxBloom=2;
             }
             break;
         case "ArrowUp":
