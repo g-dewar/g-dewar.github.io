@@ -103,7 +103,7 @@ void main()
         color=myCol;
         
         gl_FragColor =vec4(color,1.0);
-    }else if (dot(color,color)<.05){
+    }else{
         color=vec3(.1,.1,.125)*float(1-mode);
         gl_FragColor=vec4(color,float(1-mode));
     }
