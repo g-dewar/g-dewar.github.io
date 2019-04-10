@@ -651,8 +651,8 @@ var render = function () {
 
     gl.uniform3fv(gl.getUniformLocation(program, "myCol"), curCol);
 
-    if (models.length < 16) {
-        for (var i = 0; i < 15 &&  models.length<16; i++) {
+    if (models.length < 16&& models.length!=null) {
+        for (var i = 0; i < 15; i++) {
             models.push(new model(models[0].vertices, models[0].normals, models[0].texCoord, models[0].fIndex, models[0].indexCount));
         }
     }
