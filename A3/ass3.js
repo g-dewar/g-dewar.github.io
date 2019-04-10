@@ -821,13 +821,10 @@ var drawModels = function (num, path) {
         var curr = models[i];
         if (lighton) {
             curr.rotd = curr.rot;
-            if (360 - curr.rot < curr.rot) {
-                curr.rotd = curr.rot - 360;
-            }
             curr.rot += Math.random() / 5;
             curr.rot = curr.rot % 360;
-        } else if (curr.rot % 360 > 0) {
-            curr.rot -= curr.rotd / 200;
+        } else if (curr.rot> 0) {
+            curr.rot -= curr.rotd / maxOn;
         }
         //curr.mat = scalem(0.1, 0.1, 0.1);
         //var scale=16/models.length;
