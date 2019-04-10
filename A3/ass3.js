@@ -207,7 +207,7 @@ function getKey(key) {
             break;
         case "m":
             var mleng = models.length;
-            mleng=mleng%(numpoints/2);
+            mleng=mleng%numpoints;
             for (var i = 0; i < mleng; i++) {
                 models.push(new model(models[0].vertices, models[0].normals, models[0].texCoord, models[0].fIndex, models[0].indexCount));
                 //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
@@ -566,11 +566,9 @@ window.onload = function init() {
     gl.blendFunc(gl.ONE, gl.ONE);
     document.getElementById("slider1").onchange = function (event) {
         secCol[0] = parseFloat(event.target.value);
-        console.log("r");
     };
     document.getElementById("slider2").onchange = function (event) {
         secCol[1] = parseFloat(event.target.value);
-        console.log("g");
     };
     document.getElementById("slider3").onchange = function (event) {
         secCol[2] = parseFloat(event.target.value);
@@ -831,12 +829,30 @@ function threshold() {
 }
 var tcount = 0;
 var drawModels = function (num, path) {
+    var curr = models[0];
+    if(curr){
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.vertices), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vPosition);
 
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(curr.fIndex), gl.STATIC_DRAW);
 
+    gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.normals), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(vNorm, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vNorm);
+
+    if (texExist) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer)
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.texCoord), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(texCoord);
+    }
+    }
     //camRot = mult(rotate(1, vec3(1, 0, 0)),camRot);
     //camRot = mult(rotate(1.5, vec3(0, 1, 0)),camRot);
     // camRot = mult(rotate(0, vec3(0, 0, 1)),camRot);
-
 
     var lim = num;
     if (lim == 0 || lim > models.length) {
@@ -849,11 +865,12 @@ var drawModels = function (num, path) {
         var xt = 0, yt = 0, zt = 0;
         if (path) {
             var t = ((tcount + i * Math.ceil((numpoints - 1) / models.length)) % numpoints);
-            xt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.cos(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + (1 + i % 4) * points[t][0] * (ontime / maxOn);
-            yt = (1 + i % 4) * points[t][1] * (ontime / maxOn) * (ontime / maxOn);
-            zt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.sin(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + (1 + i % 4) * points[t][2] * (ontime / maxOn);
+            var rmod=(1 + i % (Math.log(models.length)));
+            xt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.cos(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + rmod * points[t][0] * (ontime / maxOn);
+            yt = rmod * points[t][1] * (ontime / maxOn) * (ontime / maxOn);
+            zt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.sin(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + rmod* points[t][2] * (ontime / maxOn);
         }
-        var curr = models[i];
+         curr = models[i];
         if (lighton) {
             curr.rotd = curr.rot;
             curr.rot += Math.random() / 5;
@@ -872,24 +889,7 @@ var drawModels = function (num, path) {
         modelMatrix = curr.mat;
 
         gl.uniformMatrix4fv(modelMatrixLoc, false, flatten(modelMatrix));
-        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.vertices), gl.STATIC_DRAW);
-        gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(vPosition);
-
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(curr.fIndex), gl.STATIC_DRAW);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.normals), gl.STATIC_DRAW);
-        gl.vertexAttribPointer(vNorm, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(vNorm);
-
-        if (texExist) {
-            gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer)
-            gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.texCoord), gl.STATIC_DRAW);
-            gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(texCoord);
-        }
+        
         gl.drawElements(gl.TRIANGLES, curr.fIndex.length, gl.UNSIGNED_SHORT, 0);
     }
 }
