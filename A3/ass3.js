@@ -580,7 +580,7 @@ var ontime = 0;
 var maxOn = 100;
 var colorCycle = 0;
 var render = function () {
-    if(colorCycle>0.0){
+    if(colorCycle>0.2){
     secCol[0] = (Math.sin(.01 * tcount + 0) * .5 + .5);
     secCol[1] = (Math.sin(.01 * tcount + 2) * .5 + .5);
     secCol[2] = (Math.sin(.01 * tcount + 4) * .5 + .5);
