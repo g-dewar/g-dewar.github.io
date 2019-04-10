@@ -394,6 +394,7 @@ window.onload = function init() {
     //gl.useProgram(program2);
     program3 = initShaders(gl, "vertex-shader3", "fragment-shader3");
     // Create and initialize  buffer objects
+
     vBuffer = gl.createBuffer();
     texBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
@@ -526,7 +527,6 @@ window.onload = function init() {
         //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 
     };
-    gl.uniform1i(gl.getUniformLocation(program,"cube"),1);
 
 
     frameBuffer = gl.createFramebuffer();
@@ -571,57 +571,7 @@ function isPowerOf2(value) {
     return (value & (value - 1)) == 0;
 }
 var t = 1;
-function yarrr(){
-    maxBloom=0;
-    bloomN=0;
-    var length=models.length;
-    while(models.length>0){
-        models.pop(models[0]);
 
-    }
-    loadObj("pirate_girl.obj");
-    image=new Image();
-    image.src="pirate_girl.png";
-    image.onload = function () {
-        console.log("uwu");
-        const level = 0;
-    const internalFormat = gl.RGBA;
-    const width = 1;
-    const height = 1;
-    const border = 0;
-    const srcFormat = gl.RGBA;
-    const srcType = gl.UNSIGNED_BYTE;
-    const pixel = new Uint8Array([255, 0, 255, 255]);  
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat,
-            srcFormat, srcType, image);
-
-        // WebGL1 has different requirements for power of 2 images
-        // vs non power of 2 images so check if the image is a
-        // power of 2 in both dimensions.
-        if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
-            // Yes, it's a power of 2. Generate mips.
-            gl.generateMipmap(gl.TEXTURE_2D);
-        } else {
-            // No, it's not a power of 2. Turn off mips and set
-            // wrapping to clamp to edge
-            gl.useProgram(program);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            var u_image0Location = gl.getUniformLocation(program, "img0");
-            gl.uniform1i(u_image0Location, 0);  // texture unit 0
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-        }
-        texExist = true;
-        gl.useProgram(program);
-        gl.uniform1i(gl.getUniformLocation(program,"cube"),0);
-        //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-
-    };
-
-}
 var curCol = vec3(0.0, 0.0, 0.0);
 var tarCol = vec3(0.0, 0.0, 0.0);
 var secCol = vec3(0.0, 0.3, 0.3);
@@ -629,22 +579,22 @@ var bloomN = 2;
 var ontime = 0;
 var maxOn = 100;
 var colorCycle = 0;
-var minBloom=0;
-var maxBloom=12;
 var render = function () {
-    secCol[0] = colorCycle * (Math.sin(.01 * tcount + 0) * .5 + .5);
-    secCol[1] = colorCycle * (Math.sin(.01 * tcount + 2) * .5 + .5);
-    secCol[2] = colorCycle * (Math.sin(.01 * tcount + 4) * .5 + .5);
+    if(colorCycle>0.0){
+    secCol[0] = (Math.sin(.01 * tcount + 0) * .5 + .5);
+    secCol[1] = (Math.sin(.01 * tcount + 2) * .5 + .5);
+    secCol[2] = (Math.sin(.01 * tcount + 4) * .5 + .5);
     secCol[0] %= 1.0;
     secCol[1] %= 1.0;
     secCol[2] %= 1.0;
+    }
     if (lighton) {
         tarCol = vec3(secCol);
     }
     tcount += 1;
     tcount = tcount % numpoints;
     if (lighton) {
-        if (bloomN < maxBloom) {
+        if (bloomN < 12) {
             bloomN += .1;
         }
         if (ontime < maxOn) {
@@ -654,7 +604,7 @@ var render = function () {
 
 
     } else {
-        if (bloomN > minBloom) {
+        if (bloomN > 2) {
             bloomN *= ontime / maxOn;
         }
         if (ontime > 0) {
@@ -889,7 +839,7 @@ var drawModels = function (num, path) {
         var curr = models[i];
         if (lighton) {
             curr.rotd = curr.rot;
-            curr.rot += .01;
+            curr.rot += Math.random() / 5;
             curr.rot = curr.rot % 360;
         } else if (curr.rot > 0) {
             curr.rot -= curr.rotd / 200;
