@@ -564,7 +564,6 @@ window.onload = function init() {
     };
     morep();
     render();
-        pirate();
 }
 
 
