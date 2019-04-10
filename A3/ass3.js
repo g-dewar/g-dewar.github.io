@@ -206,6 +206,15 @@ function getKey(key) {
 
 
             break;
+        case "d":
+
+            if (models.length > 1) {
+                models.pop(models.length - 1);
+            }
+            //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
+
+
+            break;
         case "p":
 
             lighton = true;
@@ -551,6 +560,9 @@ window.onload = function init() {
         secCol[2] = parseFloat(event.target.value);
 
     };
+    document.getElementById("slider4").onchange = function (event) {
+        colorCycle = parseFloat(event.target.value);
+    };
     morep();
     render();
 }
@@ -566,8 +578,14 @@ var secCol = vec3(0.0, 0.3, 0.3);
 var bloomN = 2;
 var ontime = 0;
 var maxOn = 100;
-
+var colorCycle = 0;
 var render = function () {
+    secCol[0] = colorCycle * (Math.sin(.01 * tcount + 0) * .5 + .5);
+    secCol[1] = colorCycle * (Math.sin(.01 * tcount + 2) * .5 + .5);
+    secCol[2] = colorCycle * (Math.sin(.01 * tcount + 4) * .5 + .5);
+    secCol[0] %= 1.0;
+    secCol[1] %= 1.0;
+    secCol[2] %= 1.0;
     if (lighton) {
         tarCol = vec3(secCol);
     }
@@ -584,8 +602,6 @@ var render = function () {
 
 
     } else {
-
-
         if (bloomN > 2) {
             bloomN *= ontime / maxOn;
         }
@@ -814,17 +830,17 @@ var drawModels = function (num, path) {
         var xt = 0, yt = 0, zt = 0;
         if (path) {
             var t = ((tcount + i * Math.ceil((numpoints - 1) / models.length)) % numpoints);
-            xt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.cos(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + (1 + i % 4) * points[t][0] * (ontime / maxOn);
-            yt = (1 + i % 4) * points[t][1] * (ontime / maxOn) * (ontime / maxOn);
-            zt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.sin(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + (1 + i % 4) * points[t][2] * (ontime / maxOn);
+            xt =  2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.cos(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) +  (1 + i % 4) * points[t][0] * (ontime / maxOn);
+            yt =  (1 + i % 4) * points[t][1] * (ontime / maxOn) * (ontime / maxOn);
+            zt =  2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.sin(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) +  (1 + i % 4) * points[t][2] * (ontime / maxOn);
         }
         var curr = models[i];
         if (lighton) {
             curr.rotd = curr.rot;
             curr.rot += Math.random() / 5;
             curr.rot = curr.rot % 360;
-        } else if (curr.rot> 0) {
-            curr.rot -= curr.rotd / maxOn;
+        } else if (curr.rot > 0) {
+            curr.rot -= curr.rotd / 200;
         }
         //curr.mat = scalem(0.1, 0.1, 0.1);
         //var scale=16/models.length;
