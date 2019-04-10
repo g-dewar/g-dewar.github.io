@@ -492,12 +492,12 @@ window.onload = function init() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
+        var yarr=true;
     // Asynchronously load an image
     image = new Image();
-    image.src = "cube.png";
+    image.src = "pirate_girl.png";
 
-    loadObj("mycube.obj");
+    loadObj("pirate_girl.obj");
 
     image.onload = function () {
         console.log("uwu");
@@ -564,8 +564,17 @@ window.onload = function init() {
         colorCycle = parseFloat(event.target.value);
     };
     morep();
+    if(!yarr){
     render();
+    }else{
+        pirate();
+    }
 }
+function pirate(){
+    drawModels(0,true);
+    requestAnimationFrame(pirate);
+}
+
 
 function isPowerOf2(value) {
     return (value & (value - 1)) == 0;
