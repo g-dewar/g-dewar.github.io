@@ -205,6 +205,22 @@ function getKey(key) {
 
 
             break;
+        case "m":
+            var length = models.length;
+            for (i = 0; i < length; i++) {
+                models.push(new model(models[0].vertices, models[0].normals, models[0].texCoord, models[0].fIndex, models[0].indexCount));
+                //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
+            }
+
+            break;
+        case "x":
+            var length = models.length;
+            for (i = 0; i < length; i += 2) {
+                models.pop(models[0]);
+                //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
+            }
+
+            break;
         case "d":
 
             if (models.length > 1) {
@@ -491,7 +507,7 @@ window.onload = function init() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    
+
     // Asynchronously load an image
     image = new Image();
     image.src = "cube.png";
@@ -580,13 +596,13 @@ var ontime = 0;
 var maxOn = 100;
 var colorCycle = 0;
 var render = function () {
-    if(colorCycle>0.2){
-    secCol[0] = (Math.sin(.01 * tcount + 0) * .5 + .5);
-    secCol[1] = (Math.sin(.01 * tcount + 2) * .5 + .5);
-    secCol[2] = (Math.sin(.01 * tcount + 4) * .5 + .5);
-    secCol[0] %= 1.0;
-    secCol[1] %= 1.0;
-    secCol[2] %= 1.0;
+    if (colorCycle > 0.2) {
+        secCol[0] = (Math.sin(.01 * tcount + 0) * .5 + .5);
+        secCol[1] = (Math.sin(.01 * tcount + 2) * .5 + .5);
+        secCol[2] = (Math.sin(.01 * tcount + 4) * .5 + .5);
+        secCol[0] %= 1.0;
+        secCol[1] %= 1.0;
+        secCol[2] %= 1.0;
     }
     if (lighton) {
         tarCol = vec3(secCol);
@@ -832,9 +848,9 @@ var drawModels = function (num, path) {
         var xt = 0, yt = 0, zt = 0;
         if (path) {
             var t = ((tcount + i * Math.ceil((numpoints - 1) / models.length)) % numpoints);
-            xt =  2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.cos(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) +  (1 + i % 4) * points[t][0] * (ontime / maxOn);
-            yt =  (1 + i % 4) * points[t][1] * (ontime / maxOn) * (ontime / maxOn);
-            zt =  2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.sin(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) +  (1 + i % 4) * points[t][2] * (ontime / maxOn);
+            xt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.cos(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + (1 + i % 4) * points[t][0] * (ontime / maxOn);
+            yt = (1 + i % 4) * points[t][1] * (ontime / maxOn) * (ontime / maxOn);
+            zt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.sin(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + (1 + i % 4) * points[t][2] * (ontime / maxOn);
         }
         var curr = models[i];
         if (lighton) {
