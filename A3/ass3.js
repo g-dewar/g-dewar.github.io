@@ -20,7 +20,7 @@ function model(verts, norms, texCoord, fIndex, indexCount) {
     this.mat = scalem(1, 1, 1);
     this.rot = 0;//Math.random()*360;
     this.rotd = 0;
-    this.rspeed=0.05+Math.random()/(4+models.length%3);
+    this.rspeed = 0.05 + Math.random() / (4 + models.length % 3);
 }
 // Parameters controlling the size of the Robot's arm
 var vPosition;
@@ -208,7 +208,7 @@ function getKey(key) {
             break;
         case "m":
             var mleng = models.length;
-            mleng=mleng%numpoints;
+            mleng = mleng % (numpoints+1);
             for (var i = 0; i < mleng; i++) {
                 models.push(new model(models[0].vertices, models[0].normals, models[0].texCoord, models[0].fIndex, models[0].indexCount));
                 //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
@@ -242,18 +242,26 @@ function getKey(key) {
             lighton = false;
             tarCol = vec3(0, 0, 0);
             break;
-            case "w":
-
-            maxBloom+=1;
-            if(maxBloom>24){
-                maxBloom=24;
+        case "b":
+            if (blink == 0) {
+                blink = 1;
+            } else {
+                blink = 0;
+                clear = 0;
             }
             break;
-            case "s":
+        case "w":
 
-            maxBloom-=1;
-            if(maxBloom<2){
-                maxBloom=2;
+            maxBloom += 1;
+            if (maxBloom > 24) {
+                maxBloom = 24;
+            }
+            break;
+        case "s":
+
+            maxBloom -= 1;
+            if (maxBloom < 1) {
+                maxBloom = 1;
             }
             break;
         case "ArrowUp":
@@ -471,8 +479,8 @@ window.onload = function init() {
     //console.log(pirate)
 
     // Create a texture.
-    texw = canvas.width;
-    texh = canvas.height;
+    texw = 2*canvas.width;
+    texh = 2*canvas.height;
     texture = gl.createTexture();
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -531,7 +539,7 @@ window.onload = function init() {
     loadObj("mycube.obj");
 
     image.onload = function () {
-        console.log("uwu");
+        //console.log("uwu");
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
             srcFormat, srcType, image);
@@ -578,7 +586,7 @@ window.onload = function init() {
     var pl = vec3(0, 0, 0);
     gl.uniform3fv(gl.getUniformLocation(program, "pLposit"), flatten(pl));
     gl.uniformMatrix4fv(gl.getUniformLocation(program, "pLtrans"), 0, flatten(translate(0, 0, zoom)));
-    gl.blendFunc(gl.ONE, gl.ONE);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
     document.getElementById("slider1").onchange = function (event) {
         secCol[0] = parseFloat(event.target.value);
     };
@@ -602,19 +610,21 @@ function isPowerOf2(value) {
 }
 var t = 1;
 
-var curCol = vec3(0.0, 0.0, 0.0);
+var curCol = [0.0, 0.0, 0.0, 0.0];
 var tarCol = vec3(0.0, 0.0, 0.0);
 var secCol = vec3(0.0, 0.3, 0.3);
-var bloomN = 2;
-var maxBloom =12;
+var bloomN = 1;
+var maxBloom = 5;
 var ontime = 0;
 var maxOn = 100;
 var colorCycle = 0;
+var clear = 0;
+var blink = 0;
 var render = function () {
     if (colorCycle > 0.2) {
-        secCol[0] = (Math.sin(.01 * tcount + 0) * .5 + .5);
-        secCol[1] = (Math.sin(.01 * tcount + 2) * .5 + .5);
-        secCol[2] = (Math.sin(.01 * tcount + 4) * .5 + .5);
+        secCol[0] = (Math.sin(.03 * tcount/10 + 0) );
+        secCol[1] = (Math.sin(.03 * tcount/10 + 2) );
+        secCol[2] = (Math.sin(.03 * tcount/10 + 4) );
         secCol[0] %= 1.0;
         secCol[1] %= 1.0;
         secCol[2] %= 1.0;
@@ -626,49 +636,55 @@ var render = function () {
     tcount = tcount % numpoints;
     if (lighton) {
         if (bloomN < maxBloom) {
-            bloomN += .1;
-        }else if(bloomN>maxBloom){
-            bloomN-=1;
+            bloomN += 0.1;
+        } else if (bloomN > maxBloom) {
+            bloomN = maxBloom;
         }
         if (ontime < maxOn) {
             ontime += 1;
+            curCol[3] = ontime / maxOn;
+
         }
 
 
 
     } else {
-        if (bloomN > 2) {
+        if (bloomN > 1) {
             bloomN *= ontime / maxOn;
         }
         if (ontime > 0) {
             ontime -= 1;
+            curCol[3] = ontime / maxOn;
+
         }
     }
-    if (curCol[0] < tarCol[0]) {
-        curCol[0] += 0.001;
+    var cmodm = .01 * ontime / maxOn;
+    if (curCol[0] < tarCol[0] || curCol[1] < tarCol[1] || curCol[2] < tarCol[2]) {
+        curCol = [tarCol[0], tarCol[1], tarCol[2], curCol[3]];
+        //     curCol[0] += cmodp;
     }
-    if (curCol[1] < tarCol[1]) {
-        curCol[1] += 0.001;
-    }
-    if (curCol[2] < tarCol[2]) {
-        curCol[2] += 0.001;
-    }
+    // if (curCol[1] < tarCol[1]) {
+    //     curCol[1] += cmodp;
+    // }
+    // if (curCol[2] < tarCol[2]) {
+    //     curCol[2] += cmodp;
+    // }
     if (curCol[0] > tarCol[0]) {
-        curCol[0] -= 0.01;
+        curCol[0] = ontime / maxOn;;
     }
     if (curCol[1] > tarCol[1]) {
-        curCol[1] -= 0.01;
+        curCol[1] = ontime / maxOn;;
     }
     if (curCol[2] > tarCol[2]) {
-        curCol[2] -= 0.01;
+        curCol[2] = ontime / maxOn;;
     }
     var flag = true;
     gl.useProgram(program);
     gl.uniformMatrix4fv(viewMatrixLoc, false, flatten(viewM));
 
-    gl.uniform3fv(gl.getUniformLocation(program, "myCol"), curCol);
+    gl.uniform4fv(gl.getUniformLocation(program, "myCol"), curCol);
 
-    if (models.length < 16&& models.length>0) {
+    if (models.length < 16 && models.length > 0) {
         for (var i = 0; i < 15; i++) {
             models.push(new model(models[0].vertices, models[0].normals, models[0].texCoord, models[0].fIndex, models[0].indexCount));
         }
@@ -691,31 +707,28 @@ var render = function () {
     // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     //zoom = tzoom;
     gl.enable(gl.DEPTH_TEST);
-    gl.clearColor(0, 0, 0, 1.0);
-
-    gl.uniform1i(gl.getUniformLocation(program, "mode"), 0);
     gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer); //not canvas.. use temp frame buffer    
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture2, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.viewport(0, 0, texw, texh);
-    aspect = texw / texh;
-    //drawModels(0,true);
-    drawModels(0, true);
-    gl.clearColor(0, 0, 0, 0);
 
 
+
+    gl.clearColor(0, 0, 0, 1.0);
     gl.uniform1i(gl.getUniformLocation(program, "mode"), 1);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture3, 0);
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    //drawModels(0,true);
+    gl.viewport(0, 0, texw, texh);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+    drawModels(0, true);
+    gl.clearColor(0, 0, 0, 1.0);
+    gl.uniform1i(gl.getUniformLocation(program, "mode"), 0);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture2, 0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.viewport(0, 0, texw, texh);
+    aspect = texw / texh;
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     drawModels(0, true);
 
     gl.useProgram(program2);
-
     gl.useProgram(program2);
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(planevert), gl.STATIC_DRAW);
@@ -725,8 +738,8 @@ var render = function () {
     gl.bufferData(gl.ARRAY_BUFFER, flatten(planetex), gl.STATIC_DRAW);
     gl.vertexAttribPointer(gl.getAttribLocation(program2, "texCoord"), 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(gl.getAttribLocation(program2, "texCoord"));
-    gl.uniform1f(gl.getUniformLocation(program2, "cwidth"), canvas.width);
-    gl.uniform1f(gl.getUniformLocation(program2, "cheight"), canvas.height);
+    gl.uniform1f(gl.getUniformLocation(program2, "cwidth"), texw);
+    gl.uniform1f(gl.getUniformLocation(program2, "cheight"), texh);
 
     gl.useProgram(program3);
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
@@ -737,8 +750,8 @@ var render = function () {
     gl.bufferData(gl.ARRAY_BUFFER, flatten(planetex), gl.STATIC_DRAW);
     gl.vertexAttribPointer(gl.getAttribLocation(program3, "texCoord"), 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(gl.getAttribLocation(program3, "texCoord"));
-    gl.uniform1f(gl.getUniformLocation(program3, "cwidth"), canvas.width);
-    gl.uniform1f(gl.getUniformLocation(program3, "cheight"), canvas.height);
+    gl.uniform1f(gl.getUniformLocation(program3, "cwidth"), texw);
+    gl.uniform1f(gl.getUniformLocation(program3, "cheight"), texh);
 
     gl.useProgram(program2);
     gl.disable(gl.DEPTH_TEST);
@@ -760,6 +773,7 @@ var render = function () {
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
     gl.clearColor(0, 0, 0, 1.0);
+    gl.viewport(0, 0, canvas.width, canvas.height);
 
 
     //render to canvas
@@ -807,7 +821,7 @@ var getFnorms = function (model) {
     }
 }
 var points = []; // DO POINTS
-var numpoints = 65536;
+var numpoints = 65535;
 var zthta = 30;
 var spRad = 6;
 var pmult = 318;
@@ -848,25 +862,25 @@ function threshold() {
 var tcount = 0;
 var drawModels = function (num, path) {
     var curr = models[0];
-    if(curr){
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.vertices), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vPosition);
+    if (curr) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.vertices), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(vPosition);
 
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(curr.fIndex), gl.STATIC_DRAW);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(curr.fIndex), gl.STATIC_DRAW);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.normals), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(vNorm, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vNorm);
+        gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.normals), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(vNorm, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(vNorm);
 
-    if (texExist) {
-        gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer)
-        gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.texCoord), gl.STATIC_DRAW);
-        gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(texCoord);
-    }
+        if (texExist) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer)
+            gl.bufferData(gl.ARRAY_BUFFER, flatten(curr.texCoord), gl.STATIC_DRAW);
+            gl.vertexAttribPointer(texCoord, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(texCoord);
+        }
     }
     //camRot = mult(rotate(1, vec3(1, 0, 0)),camRot);
     //camRot = mult(rotate(1.5, vec3(0, 1, 0)),camRot);
@@ -879,22 +893,24 @@ var drawModels = function (num, path) {
 
     projectionMatrix = perspective(fovy, aspect, .01, 1000);
     gl.uniformMatrix4fv(gl.getUniformLocation(program, "projectionMatrix"), false, flatten(projectionMatrix));
+    
     for (var i = 0; i < lim; i++) {
         var xt = 0, yt = 0, zt = 0;
         if (path) {
+            var rmod =(1 + i %(1+ (Math.log(models.length))));
             var t = ((tcount + i * Math.ceil((numpoints - 1) / models.length)) % numpoints);
-            var rmod=(1 + i %(1+ (Math.log(models.length))));
             xt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.cos(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + rmod * points[t][0] * (ontime / maxOn);
             yt = rmod * points[t][1] * (ontime / maxOn) * (ontime / maxOn);
-            zt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.sin(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + rmod* points[t][2] * (ontime / maxOn);
+            zt = 2 * (1 + i % Math.floor(Math.sqrt(models.length))) * Math.sin(i * 2 * Math.PI / models.length) * (1 - ontime / maxOn) + rmod * points[t][2] * (ontime / maxOn);
         }
-         curr = models[i];
+        curr = models[i];
         if (lighton) {
-            curr.rotd = curr.rot;
-            curr.rot += curr.rspeed;
+
+            curr.rot = curr.rspeed * tcount * (ontime / maxOn);
             curr.rot = curr.rot % 360;
+            curr.rotd = curr.rot;
         } else if (curr.rot > 0) {
-            curr.rot -= curr.rotd / 200;
+            curr.rot = curr.rotd * (ontime / maxOn);
         }
         //curr.mat = scalem(0.1, 0.1, 0.1);
         //var scale=16/models.length;
@@ -907,7 +923,7 @@ var drawModels = function (num, path) {
         modelMatrix = curr.mat;
 
         gl.uniformMatrix4fv(modelMatrixLoc, false, flatten(modelMatrix));
-        
+
         gl.drawElements(gl.TRIANGLES, curr.fIndex.length, gl.UNSIGNED_SHORT, 0);
     }
 }
