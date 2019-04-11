@@ -10,6 +10,7 @@ var texture, texture2, texture3, texture4;
 var texw, texh;
 var texCount;
 function model(verts, norms, texCoord, fIndex, indexCount) {
+    console.log("uwu");
     this.vertices = verts;
     this.normals = norms;
     this.fnormals = [];
