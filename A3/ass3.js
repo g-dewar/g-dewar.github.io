@@ -20,6 +20,7 @@ function model(verts, norms, texCoord, fIndex, indexCount) {
     this.mat = scalem(1, 1, 1);
     this.rot = 0;//Math.random()*360;
     this.rotd = 0;
+    this.rspeed=Math.random()/3;
 }
 // Parameters controlling the size of the Robot's arm
 var vPosition;
@@ -890,7 +891,7 @@ var drawModels = function (num, path) {
          curr = models[i];
         if (lighton) {
             curr.rotd = curr.rot;
-            curr.rot += Math.random() / 5;
+            curr.rot += curr.rspeed;
             curr.rot = curr.rot % 360;
         } else if (curr.rot > 0) {
             curr.rot -= curr.rotd / 200;
