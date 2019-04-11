@@ -479,8 +479,8 @@ window.onload = function init() {
     //console.log(pirate)
 
     // Create a texture.
-    texw = 2*canvas.width;
-    texh = 2*canvas.height;
+    texw = 4*canvas.width;
+    texh = 4*canvas.height;
     texture = gl.createTexture();
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.bindTexture(gl.TEXTURE_2D, texture);
