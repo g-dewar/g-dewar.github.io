@@ -99,7 +99,7 @@ void main()
     vec3 pLpos=vec3(projectionMatrix*viewMatrix*vec4(pLposit,1.0));
     vec3 color=texture2D(img0,v_texCoord).rgb;
     if(mode==1){
-    if(dot(color,color)>0.95){
+    if(color.r>0.95){
         //color=myCol;        
         //gl_FragColor =vec4(color,0.5);
         gl_FragColor=myCol;
