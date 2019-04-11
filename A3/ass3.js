@@ -20,7 +20,7 @@ function model(verts, norms, texCoord, fIndex, indexCount) {
     this.mat = scalem(1, 1, 1);
     this.rot = 0;//Math.random()*360;
     this.rotd = 0;
-    this.rspeed=Math.random()/3;
+    this.rspeed=0.05+Math.random()/(4+models.length%3);
 }
 // Parameters controlling the size of the Robot's arm
 var vPosition;
