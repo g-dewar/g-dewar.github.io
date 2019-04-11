@@ -218,7 +218,7 @@ function getKey(key) {
         case "x":
             var mleng = models.length;
             for (var i = 0; i < mleng; i += 2) {
-                models.pop(models[0]);
+                models.pop();
                 //models[models.length - 1].mat = translate(0, 0, -models.length + 1);
             }
 
@@ -297,6 +297,9 @@ function getKey(key) {
             cam.z = 0;
             thetaCamX = 0;
             thetaCamY = 0;
+            while(models.length>1){
+                models.pop();
+            }
 
             break;
 
