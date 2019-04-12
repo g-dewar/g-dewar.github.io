@@ -144,13 +144,13 @@ void main()
         float y = v_texCoord.y;
         vec4 t = texture2D(img0, vec2(x,y))+
                        (texture2D( img0, vec2(x-dx, y))
-                       +texture2D( img0, vec2(x-dx, y-dy))
-                       +texture2D( img0, vec2(x-dx, y+dy))
                        +texture2D( img0, vec2(x, y+dy))
                        +texture2D( img0, vec2(x, y-dy))
                        +texture2D( img0, vec2(x+dx, y))
-                       +texture2D( img0, vec2(x+dx, y+dy))
-                       +texture2D( img0, vec2(x+dx, y-dy)))/s;                           
+                       +texture2D( img0, vec2(x-dx-dx, y))
+                       +texture2D( img0, vec2(x, y+dy+dy))
+                       +texture2D( img0, vec2(x, y-dy-dy))
+                       +texture2D( img0, vec2(x+dx+dx, y)))/s;                           
         gl_FragColor = t;
     
                      

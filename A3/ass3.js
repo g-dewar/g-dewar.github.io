@@ -240,7 +240,6 @@ function getKey(key) {
         case "o":
 
             lighton = false;
-            tarCol = vec3(0, 0, 0);
             break;
         case "b":
             if (blink == 0) {
@@ -589,7 +588,7 @@ window.onload = function init() {
     var pl = vec3(0, 0, 0);
     gl.uniform3fv(gl.getUniformLocation(program, "pLposit"), flatten(pl));
     gl.uniformMatrix4fv(gl.getUniformLocation(program, "pLtrans"), 0, flatten(translate(0, 0, zoom)));
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     document.getElementById("slider1").onchange = function (event) {
         secCol[0] = parseFloat(event.target.value);
     };
@@ -603,7 +602,6 @@ window.onload = function init() {
     document.getElementById("slider4").onchange = function (event) {
         colorCycle = parseFloat(event.target.value);
     };
-    gl.cullFace(gl.BACK);
     morep();
     render();
 }
@@ -659,11 +657,13 @@ var render = function () {
         if (ontime > 0) {
             ontime -= 1;
             curCol[3] = ontime / maxOn;
-
+            if(curCol[3]<.1){
+                tarCol=[0,0,0,1];
+            }
         }
     }
     var cmodm = .01 * ontime / maxOn;
-    if (curCol[0] < tarCol[0] || curCol[1] < tarCol[1] || curCol[2] < tarCol[2]) {
+    if (curCol[0] != tarCol[0] || curCol[1] != tarCol[1] || curCol[2] != tarCol[2]) {
         curCol = [tarCol[0], tarCol[1], tarCol[2], curCol[3]];
         //     curCol[0] += cmodp;
     }
@@ -673,15 +673,15 @@ var render = function () {
     // if (curCol[2] < tarCol[2]) {
     //     curCol[2] += cmodp;
     // }
-    if (curCol[0] > tarCol[0]) {
-        curCol[0] = ontime / maxOn;;
-    }
-    if (curCol[1] > tarCol[1]) {
-        curCol[1] = ontime / maxOn;;
-    }
-    if (curCol[2] > tarCol[2]) {
-        curCol[2] = ontime / maxOn;;
-    }
+    // if (curCol[0] > tarCol[0]) {
+    //     curCol[0] = ontime / maxOn;;
+    // }
+    // if (curCol[1] > tarCol[1]) {
+    //     curCol[1] = ontime / maxOn;;
+    // }
+    // if (curCol[2] > tarCol[2]) {
+    //     curCol[2] = ontime / maxOn;;
+    // }
     var flag = true;
     gl.useProgram(program);
     gl.uniformMatrix4fv(viewMatrixLoc, false, flatten(viewM));
@@ -910,17 +910,16 @@ var drawModels = function (num, path) {
         curr = models[i];
         if (lighton) {
 
-            curr.rot = curr.rspeed * tcount/4;
-            curr.rot=curr.rot%360;
-            curr.rotd = curr.rot;
+            curr.rot +=curr.rspeed; //((curr.rspeed*tcount)%360) * (ontime / maxOn);
+            curr.rotd = curr.rot%360;
         } else if (curr.rot > 0) {
-            curr.rot = curr.rotd * (ontime / maxOn);
+            curr.rot = curr.rotd*(ontime / maxOn)//((curr.rspeed*tcount)%360) * (ontime / maxOn);
         }
         //curr.mat = scalem(0.1, 0.1, 0.1);
         //var scale=16/models.length;
         curr.mat = mult(rotate(curr.rot, vec3(0, 1, 0)), mat4());
-        curr.mat = mult(rotate(2 * curr.rot, vec3(1, 0, 0)), curr.mat);
-        curr.mat = mult(rotate(4 * curr.rot, vec3(0, 0, 1)), curr.mat);
+        curr.mat = mult(rotate(curr.rot, vec3(1, 0, 0)), curr.mat);
+        curr.mat = mult(rotate(curr.rot, vec3(0, 0, 1)), curr.mat);
         curr.mat = mult(translate(xt, yt, zt), curr.mat);
         curr.mat = mult(camRot, curr.mat);
 
