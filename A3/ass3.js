@@ -910,7 +910,8 @@ var drawModels = function (num, path) {
         curr = models[i];
         if (lighton) {
 
-            curr.rot = curr.rspeed * (tcount% 360) * (ontime / maxOn);
+            curr.rot = curr.rspeed * tcount * (ontime / maxOn);
+            curr.rot=curr.rot%360;
             curr.rotd = curr.rot;
         } else if (curr.rot > 0) {
             curr.rot = curr.rotd * (ontime / maxOn);
