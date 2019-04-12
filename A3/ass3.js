@@ -10,7 +10,6 @@ var texture, texture2, texture3, texture4;
 var texw, texh;
 var texCount;
 function model(verts, norms, texCoord, fIndex, indexCount) {
-    console.log("uwu"+models.length);
     this.vertices = verts;
     this.normals = norms;
     this.fnormals = [];
@@ -604,6 +603,7 @@ window.onload = function init() {
     document.getElementById("slider4").onchange = function (event) {
         colorCycle = parseFloat(event.target.value);
     };
+    gl.cullFace(gl.BACK);
     morep();
     render();
 }
@@ -910,8 +910,7 @@ var drawModels = function (num, path) {
         curr = models[i];
         if (lighton) {
 
-            curr.rot = curr.rspeed * tcount * (ontime / maxOn);
-            curr.rot = curr.rot % 360;
+            curr.rot = curr.rspeed * (tcount% 360) * (ontime / maxOn);
             curr.rotd = curr.rot;
         } else if (curr.rot > 0) {
             curr.rot = curr.rotd * (ontime / maxOn);
