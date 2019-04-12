@@ -658,7 +658,7 @@ var render = function () {
             ontime -= 1;
             curCol[3] = ontime / maxOn;
             if(curCol[3]<.1){
-                tarCol=[0,0,0,1];
+                tarCol=[0,0,0,0];
             }
         }
     }
@@ -712,17 +712,19 @@ var render = function () {
     //zoom = tzoom;
     gl.enable(gl.DEPTH_TEST);
     gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuffer); //not canvas.. use temp frame buffer    
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture4, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    
 
 
 
-    gl.clearColor(0, 0, 0, 1.0);
+    gl.clearColor(0, 0, 0, 0.0);
     gl.uniform1i(gl.getUniformLocation(program, "mode"), 1);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture3, 0);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.viewport(0, 0, texw, texh);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    
     drawModels(0, true);
+
     gl.clearColor(0, 0, 0, 1.0);
     gl.uniform1i(gl.getUniformLocation(program, "mode"), 0);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture2, 0);
